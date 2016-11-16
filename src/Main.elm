@@ -18,6 +18,6 @@ main =
 
 initModel : Model
 initModel =
-    { sentence = "Elm sure is fun!"
+    { sentence = "Elm sure is fun (and typesafe)!"
     , input = ""
     }
