@@ -1,2 +1,1 @@
-# elm-toggl
-Connects to Toggl.
+# elm-typesaferacer
