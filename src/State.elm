@@ -5,4 +5,6 @@ import Types exposing (..)
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    case msg of
+        Input string ->
+            ( { model | input = string }, Cmd.none )

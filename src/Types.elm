@@ -2,8 +2,10 @@ module Types exposing (..)
 
 
 type alias Model =
-    String
+    { sentence : String
+    , input : String
+    }
 
 
 type Msg
-    = Hallo
+    = Input String

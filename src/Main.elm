@@ -6,11 +6,18 @@ import Types exposing (..)
 import Views exposing (..)
 
 
-main : Program Never String Msg
+main : Program Never Model Msg
 main =
     Html.program
-        { init = ( "", Cmd.none )
+        { init = ( initModel, Cmd.none )
         , view = view
         , update = update
         , subscriptions = (\_ -> Sub.none)
         }
+
+
+initModel : Model
+initModel =
+    { sentence = "Elm sure is fun!"
+    , input = ""
+    }
