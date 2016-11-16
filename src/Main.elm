@@ -1,12 +1,12 @@
 module Main exposing (..)
 
-import Html.App as Html
+import Html as Html
 import State exposing (..)
 import Types exposing (..)
 import Views exposing (..)
 
 
-main : Program Never
+main : Program Never String Msg
 main =
     Html.program
         { init = ( "", Cmd.none )
