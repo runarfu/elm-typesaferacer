@@ -20,4 +20,5 @@ initModel : Model
 initModel =
     { sentence = "Elm sure is fun (and typesafe)!"
     , input = ""
+    , finished = ""
     }

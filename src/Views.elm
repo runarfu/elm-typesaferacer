@@ -11,7 +11,7 @@ view : Model -> Html Msg
 view model =
     div [ style [ ( "text-align", "center" ) ] ]
         [ h1 [] [ text "Typesafe Racer" ]
-        , p [] [ highlightCorrectPart model.sentence model.input ]
+        , p [] [ highlightCorrectPart model.sentence ( model.finished ++model.input ) ]
         , p [] [ textField model ]
         ]
 
@@ -39,4 +39,4 @@ highlightCorrectPart correctString attempt =
 
 textField : Model -> Html Msg
 textField model =
-    textarea [ autofocus True, onInput Input ] [ text model.input ]
+    textarea [ autofocus True, onInput Input, value model.input] [  ]
