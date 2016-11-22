@@ -18,6 +18,7 @@ main =
 
 initModel : Model
 initModel =
-    { sentence = "Elm sure is fun (and typesafe)!"
+    { sentence = String.words "Elm sure is fun (and typesafe)!"
     , input = ""
+    , finished = 0
     }

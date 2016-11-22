@@ -2,8 +2,9 @@ module Types exposing (..)
 
 
 type alias Model =
-    { sentence : String
+    { sentence : List String
     , input : String
+    , finished : Int
     }
 
 
