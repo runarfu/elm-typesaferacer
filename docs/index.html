@@ -8233,28 +8233,49 @@ var _runarfu$elm_typesaferacer$Types$Model = F3(
 var _runarfu$elm_typesaferacer$Types$Input = function (a) {
 	return {ctor: 'Input', _0: a};
 };
-var _runarfu$elm_typesaferacer$State$update = F2(
-	function (msg, model) {
-		var _p0 = msg;
-		var _p1 = _p0._0;
-		var attempt = A2(_elm_lang$core$Basics_ops['++'], model.finished, _p1);
-		return (A2(_elm_lang$core$String$startsWith, attempt, model.sentence) && (A2(_elm_lang$core$String$endsWith, ' ', _p1) || _elm_lang$core$Native_Utils.eq(attempt, model.sentence))) ? {
+var _runarfu$elm_typesaferacer$State$notDone = F3(
+	function (string, word, model) {
+		return _elm_lang$core$Native_Utils.eq(
+			string,
+			A2(_elm_lang$core$Basics_ops['++'], word, ' ')) ? {
 			ctor: '_Tuple2',
 			_0: _elm_lang$core$Native_Utils.update(
 				model,
-				{
-					input: '',
-					finished: A2(_elm_lang$core$Basics_ops['++'], model.finished, _p1)
-				}),
+				{finished: model.finished + 1, input: ''}),
+			_1: _elm_lang$core$Platform_Cmd$none
+		} : ((_elm_lang$core$Native_Utils.eq(string, word) && _elm_lang$core$Native_Utils.eq(
+			model.finished + 1,
+			_elm_lang$core$List$length(model.sentence))) ? {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Native_Utils.update(
+				model,
+				{finished: model.finished + 1, input: ''}),
 			_1: _elm_lang$core$Platform_Cmd$none
 		} : {
 			ctor: '_Tuple2',
 			_0: _elm_lang$core$Native_Utils.update(
 				model,
-				{input: _p1}),
+				{input: string}),
 			_1: _elm_lang$core$Platform_Cmd$none
-		};
+		});
 	});
+var _runarfu$elm_typesaferacer$State$update = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		var remainingWords = A2(_elm_lang$core$List$drop, model.finished, model.sentence);
+		var finishedWords = A2(_elm_lang$core$List$take, model.finished, model.sentence);
+		var _p1 = _elm_lang$core$List$head(remainingWords);
+		if (_p1.ctor === 'Just') {
+			return A3(_runarfu$elm_typesaferacer$State$notDone, _p0._0, _p1._0, model);
+		} else {
+			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+		}
+	});
+var _runarfu$elm_typesaferacer$Views$winMessage = function (model) {
+	return _elm_lang$core$Native_Utils.eq(
+		model.finished,
+		_elm_lang$core$List$length(model.sentence)) ? _elm_lang$html$Html$text('You\'re winner!') : _elm_lang$html$Html$text('');
+};
 var _runarfu$elm_typesaferacer$Views$textField = function (model) {
 	return A2(
 		_elm_lang$html$Html$textarea,
@@ -8273,16 +8294,45 @@ var _runarfu$elm_typesaferacer$Views$textField = function (model) {
 		},
 		{ctor: '[]'});
 };
-var _runarfu$elm_typesaferacer$Views$highlightCorrectPart = F2(
-	function (correctString, attempt) {
-		if (A2(_elm_lang$core$String$startsWith, attempt, correctString)) {
-			var length = _elm_lang$core$String$length(attempt);
-			var correctPart = A2(_elm_lang$core$String$left, length, correctString);
-			var wrongPart = A2(_elm_lang$core$String$dropLeft, length, correctString);
-			return A2(
-				_elm_lang$html$Html$span,
-				{ctor: '[]'},
-				{
+var _runarfu$elm_typesaferacer$Views$highlightCorrectPart = F3(
+	function (sentence, finished, input) {
+		var remainingWords = A2(_elm_lang$core$List$drop, finished, sentence);
+		var currentWord = A2(
+			_elm_lang$core$Maybe$withDefault,
+			'',
+			_elm_lang$core$List$head(remainingWords));
+		var correctWords = A2(_elm_lang$core$List$take, finished, sentence);
+		return A2(
+			_elm_lang$html$Html$span,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$span,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$style(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'color', _1: 'green'},
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'mediumgray'},
+									_1: {ctor: '[]'}
+								}
+							}),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								A2(_elm_lang$core$String$join, ' ', correctWords),
+								' ')),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
 					ctor: '::',
 					_0: A2(
 						_elm_lang$html$Html$span,
@@ -8291,18 +8341,14 @@ var _runarfu$elm_typesaferacer$Views$highlightCorrectPart = F2(
 							_0: _elm_lang$html$Html_Attributes$style(
 								{
 									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'color', _1: 'green'},
-									_1: {
-										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'black'},
-										_1: {ctor: '[]'}
-									}
+									_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'lightgray'},
+									_1: {ctor: '[]'}
 								}),
 							_1: {ctor: '[]'}
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text(correctPart),
+							_0: _elm_lang$html$Html$text(currentWord),
 							_1: {ctor: '[]'}
 						}),
 					_1: {
@@ -8312,22 +8358,27 @@ var _runarfu$elm_typesaferacer$Views$highlightCorrectPart = F2(
 							{ctor: '[]'},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(wrongPart),
+								_0: _elm_lang$html$Html$text(
+									A2(
+										_elm_lang$core$String$join,
+										' ',
+										A2(
+											_elm_lang$core$List$append,
+											{
+												ctor: '::',
+												_0: ' ',
+												_1: {ctor: '[]'}
+											},
+											A2(
+												_elm_lang$core$Maybe$withDefault,
+												{ctor: '[]'},
+												_elm_lang$core$List$tail(remainingWords))))),
 								_1: {ctor: '[]'}
 							}),
 						_1: {ctor: '[]'}
 					}
-				});
-		} else {
-			return A2(
-				_elm_lang$html$Html$div,
-				{ctor: '[]'},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text(correctString),
-					_1: {ctor: '[]'}
-				});
-		}
+				}
+			});
 	});
 var _runarfu$elm_typesaferacer$Views$view = function (model) {
 	return A2(
@@ -8359,10 +8410,7 @@ var _runarfu$elm_typesaferacer$Views$view = function (model) {
 					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: A2(
-							_runarfu$elm_typesaferacer$Views$highlightCorrectPart,
-							model.sentence,
-							A2(_elm_lang$core$Basics_ops['++'], model.finished, model.input)),
+						_0: A3(_runarfu$elm_typesaferacer$Views$highlightCorrectPart, model.sentence, model.finished, model.input),
 						_1: {ctor: '[]'}
 					}),
 				_1: {
@@ -8375,12 +8423,27 @@ var _runarfu$elm_typesaferacer$Views$view = function (model) {
 							_0: _runarfu$elm_typesaferacer$Views$textField(model),
 							_1: {ctor: '[]'}
 						}),
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$p,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _runarfu$elm_typesaferacer$Views$winMessage(model),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
 				}
 			}
 		});
 };
-var _runarfu$elm_typesaferacer$Main$initModel = {sentence: 'Elm sure is fun (and typesafe)!', input: '', finished: ''};
+var _runarfu$elm_typesaferacer$Main$initModel = {
+	sentence: _elm_lang$core$String$words('Elm sure is fun (and typesafe)!'),
+	input: '',
+	finished: 0
+};
 var _runarfu$elm_typesaferacer$Main$main = _elm_lang$html$Html$program(
 	{
 		init: {ctor: '_Tuple2', _0: _runarfu$elm_typesaferacer$Main$initModel, _1: _elm_lang$core$Platform_Cmd$none},
