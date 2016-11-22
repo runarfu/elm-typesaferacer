@@ -8,9 +8,6 @@ update msg model =
     case msg of
         Input string ->
             let
-                finishedWords =
-                    List.take model.finished model.sentence
-
                 remainingWords =
                     List.drop model.finished model.sentence
             in
