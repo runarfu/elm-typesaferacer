@@ -13,6 +13,8 @@ view model =
         [ h1 [] [ text "Typesafe Racer" ]
         , p [] [ highlightCorrectPart model.sentence model.input ]
         , p [] [ textField model ]
+        , p [] [ text <| "Current time: " ++ (toString model.time) ]
+        , p [] [ text <| "Time spent: " ++ (toString (model.time - model.startTime)) ]
         ]
 
 
