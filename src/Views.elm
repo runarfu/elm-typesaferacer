@@ -5,6 +5,7 @@ import Html.Events exposing (..)
 import Html.Attributes exposing (..)
 import String
 import Types exposing (..)
+import Time
 
 
 view : Model -> Html Msg
@@ -14,8 +15,30 @@ view model =
         , p [] [ highlightCorrectPart model.sentence model.input ]
         , p [] [ textField model ]
         , p [] [ text <| "Current time: " ++ (toString model.time) ]
-        , p [] [ text <| "Time spent: " ++ (toString (model.time - model.startTime)) ]
+        , p [] [ text <| viewTime model ]
         ]
+
+
+viewTime : Model -> String
+viewTime model =
+    let
+        timeSpent =
+            model.time - model.startTime
+    in
+        [ Time.inHours
+        , Time.inMinutes
+        , Time.inSeconds
+        ]
+            |> List.map (\f -> round (f timeSpent))
+            |> List.map toString
+            |> List.map (String.padLeft 2 '0')
+            |> List.intersperse ":"
+            |> String.concat
+
+
+renderTime : Time.Time -> String
+renderTime time =
+    (toString <| Time.inHours time)
 
 
 highlightCorrectPart : String -> String -> Html Msg
