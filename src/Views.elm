@@ -11,32 +11,39 @@ view : Model -> Html Msg
 view model =
     div [ style [ ( "text-align", "center" ) ] ]
         [ h1 [] [ text "Typesafe Racer" ]
-        , p [] [ highlightCorrectPart model.sentence ( model.finished ++model.input ) ]
+        , p [] [ highlightCorrectPart model.sentence model.finished model.input ]
         , p [] [ textField model ]
+        , p [] [ winMessage model ]
         ]
 
 
-highlightCorrectPart : String -> String -> Html Msg
-highlightCorrectPart correctString attempt =
-    if String.startsWith attempt correctString then
-        let
-            length =
-                String.length attempt
+highlightCorrectPart : List String -> Int -> String -> Html Msg
+highlightCorrectPart sentence finished input =
+    let
+        correctWords =
+            List.take finished sentence
 
-            correctPart =
-                String.left length correctString
+        remainingWords =
+            List.drop finished sentence
 
-            wrongPart =
-                String.dropLeft length correctString
-        in
-            span []
-                [ span [ style [ ( "color", "green" ), ( "background-color", "black" ) ] ] [ text correctPart ]
-                , span [] [ text wrongPart ]
-                ]
-    else
-        div [] [ text correctString ]
+        currentWord =
+            List.head remainingWords |> Maybe.withDefault ""
+    in
+        span []
+            [ span [ style [ ( "color", "green" ), ( "background-color", "mediumgray" ) ] ] [ String.join " " correctWords ++ " " |> text ]
+            , span [ style [ ( "background-color", "lightgray" ) ] ] [ text currentWord ]
+            , span [] [ List.tail remainingWords |> Maybe.withDefault [] |> List.append [ " " ] |> String.join " " |> text ]
+            ]
 
 
 textField : Model -> Html Msg
 textField model =
-    textarea [ autofocus True, onInput Input, value model.input] [  ]
+    textarea [ autofocus True, onInput Input, value model.input ] []
+
+
+winMessage : Model -> Html Msg
+winMessage model =
+    if model.finished == List.length model.sentence then
+        text "You're winner!"
+    else
+        text ""
