@@ -9,7 +9,7 @@ import Types exposing (..)
 
 view : Model -> Html Msg
 view model =
-    div [ style [ ( "text-align", "center" ) ] ]
+    div [ centerStyle ]
         [ h1 [] [ text "Typesafe Racer" ]
         , p [] [ highlightCorrectPart model.sentence model.finished model.input ]
         , p [] [ textField model ]
@@ -30,9 +30,15 @@ highlightCorrectPart sentence finished input =
             List.head remainingWords |> Maybe.withDefault ""
     in
         span []
-            [ span [ style [ ( "color", "green" ), ( "background-color", "mediumgray" ) ] ] [ String.join " " correctWords ++ " " |> text ]
-            , span [ style [ ( "background-color", "lightgray" ) ] ] [ text currentWord ]
-            , span [] [ List.tail remainingWords |> Maybe.withDefault [] |> List.append [ " " ] |> String.join " " |> text ]
+            [ span [ correctStyle ] [ String.join " " correctWords ++ " " |> text ]
+            , span [ currentWordStyle ] [ text currentWord ]
+            , span []
+                [ List.tail remainingWords
+                    |> Maybe.withDefault []
+                    |> List.append [ " " ]
+                    |> String.join " "
+                    |> text
+                ]
             ]
 
 
@@ -47,3 +53,15 @@ winMessage model =
         text "You're winner!"
     else
         text ""
+
+
+centerStyle =
+    style [ ( "text-align", "center" ) ]
+
+
+correctStyle =
+    style [ ( "color", "green" ), ( "background-color", "mediumgray" ) ]
+
+
+currentWordStyle =
+    style [ ( "background-color", "lightgray" ) ]

@@ -1,4 +1,4 @@
-module State exposing (..)
+module State exposing (update)
 
 import Types exposing (..)
 
@@ -24,9 +24,13 @@ update msg model =
 
 notDone : String -> String -> Model -> ( Model, Cmd Msg )
 notDone string word model =
-    if string == word ++ " " then
-        ( { model | finished = model.finished + 1, input = "" }, Cmd.none )
-    else if string == word && model.finished + 1 == List.length model.sentence then
-        ( { model | finished = model.finished + 1, input = "" }, Cmd.none )
-    else
-        ( { model | input = string }, Cmd.none )
+    let
+        newModel =
+            if string == word ++ " " then
+                { model | finished = model.finished + 1, input = "" }
+            else if string == word && model.finished + 1 == List.length model.sentence then
+                { model | finished = model.finished + 1, input = "" }
+            else
+                { model | input = string }
+    in
+        ( newModel, Cmd.none )
