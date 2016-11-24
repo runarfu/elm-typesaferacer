@@ -11,57 +11,40 @@ view : Model -> Html Msg
 view model =
     div [ centerStyle ]
         [ h1 [] [ text "Typesafe Racer" ]
-        , p [] [ highlightCorrectPart model.sentence model.finished model.input ]
-        , p [] [ textField model ]
-        , p [] [ winMessage model ]
+        , progress model
+        , textField model
+        , p [] [ text (toString model) ]
         ]
 
 
-highlightCorrectPart : List String -> Int -> String -> Html Msg
-highlightCorrectPart sentence finished input =
+progress : Model -> Html Msg
+progress model =
     let
-        correctWords =
-            List.take finished sentence
-
-        remainingWords =
-            List.drop finished sentence
-
-        currentWord =
-            List.head remainingWords |> Maybe.withDefault ""
-    in
-        span []
-            [ span [ correctStyle ] [ String.join " " correctWords ++ " " |> text ]
-            , span [ currentWordStyle ] [ text currentWord ]
-            , span []
-                [ List.tail remainingWords
-                    |> Maybe.withDefault []
-                    |> List.append [ " " ]
+        render words color =
+            span [ style [ ( "color", color ) ] ]
+                [ words
                     |> String.join " "
                     |> text
                 ]
+    in
+        p []
+            [ render model.history "green"
+            , span [] [ text " " ]
+            , render model.wordsToWrite "black"
             ]
 
 
 textField : Model -> Html Msg
 textField model =
-    textarea [ autofocus True, onInput Input, value model.input ] []
-
-
-winMessage : Model -> Html Msg
-winMessage model =
-    if model.finished == List.length model.sentence then
-        text "You're winner!"
-    else
-        text ""
+    div []
+        [ textarea
+            [ autofocus True
+            , onInput Input
+            , value model.input
+            ]
+            []
+        ]
 
 
 centerStyle =
     style [ ( "text-align", "center" ) ]
-
-
-correctStyle =
-    style [ ( "color", "green" ), ( "background-color", "mediumgray" ) ]
-
-
-currentWordStyle =
-    style [ ( "background-color", "lightgray" ) ]

@@ -1,6 +1,7 @@
 module Main exposing (main)
 
 import Html as Html
+import String
 import State exposing (..)
 import Types exposing (..)
 import Views exposing (..)
@@ -8,17 +9,16 @@ import Views exposing (..)
 
 main : Program Never Model Msg
 main =
-    Html.program
-        { init = ( initModel, Cmd.none )
+    Html.beginnerProgram
+        { model = initModel
         , view = view
         , update = update
-        , subscriptions = (\_ -> Sub.none)
         }
 
 
 initModel : Model
 initModel =
-    { sentence = String.words "Elm sure is fun (and typesafe)!"
+    { wordsToWrite = String.words "Elm sure is cool."
+    , history = []
     , input = ""
-    , finished = 0
     }

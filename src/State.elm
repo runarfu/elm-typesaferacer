@@ -3,31 +3,42 @@ module State exposing (update)
 import Types exposing (..)
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model -> Model
 update msg model =
     case msg of
-        Input string ->
-            let
-                remainingWords =
-                    List.drop model.finished model.sentence
-            in
-                case List.head remainingWords of
-                    Just word ->
-                        notDone string word model
-
-                    Nothing ->
-                        ( model, Cmd.none )
+        Input input ->
+            model
+                |> updateInput input
+                |> moveWordToHistoryIfCorrect
 
 
-notDone : String -> String -> Model -> ( Model, Cmd Msg )
-notDone string word model =
+updateInput : String -> Model -> Model
+updateInput string model =
+    { model | input = string }
+
+
+moveWordToHistoryIfCorrect : Model -> Model
+moveWordToHistoryIfCorrect model =
     let
-        newModel =
-            if string == word ++ " " then
-                { model | finished = model.finished + 1, input = "" }
-            else if string == word && model.finished + 1 == List.length model.sentence then
-                { model | finished = model.finished + 1, input = "" }
-            else
-                { model | input = string }
+        moveWordToHistory word newWordsToWrite =
+            { model
+                | wordsToWrite = newWordsToWrite
+                , history = model.history ++ [ word ]
+                , input = ""
+            }
     in
-        ( newModel, Cmd.none )
+        case model.wordsToWrite of
+            lastWord :: [] ->
+                if model.input == lastWord then
+                    moveWordToHistory lastWord []
+                else
+                    model
+
+            firstWord :: rest ->
+                if model.input == (firstWord ++ " ") then
+                    moveWordToHistory firstWord rest
+                else
+                    model
+
+            _ ->
+                model
